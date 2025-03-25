@@ -1,7 +1,7 @@
 ## Ajax CRUD Example
 
 Format response API:
-```json
+```
 status: 200
 message: "ok",
 data: [
