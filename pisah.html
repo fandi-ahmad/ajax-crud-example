@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pisah | Ajax CRUD Example</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  
+<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" border="1">
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Name</th>
+      <th>Position</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+      
+  </tbody>
+</table>
+
+<hr>
+
+<form id="formForSubmit">
+  <input type="text" id="name" placeholder="Name">
+  <input type="text" id="position" placeholder="Position">
+  <button type="submit">save</button>
+</form>
+
+<form id="editForm" style="display: none;">
+  <input type="hidden" id="editId">
+  
+  <input type="text" id="editName" required>
+  
+  <input type="text" id="editPosition" required>
+  
+  <button type="submit">Update</button>
+</form>
+
+<script src="/utils/getAllData.js"></script>
+<script src="/utils/createData.js"></script>
+<script src="/utils/updateData.js"></script>
+<script src="/utils/deleteData.js"></script>
+<script src="/utils/main.js"></script>
+
+</body>
+</html>

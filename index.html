@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajax CRUD Example</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  
+<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" border="1">
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Name</th>
+      <th>Position</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+      
+  </tbody>
+</table>
+
+<hr>
+
+<form id="formForSubmit">
+  <input type="text" id="name" placeholder="Name">
+  <input type="text" id="position" placeholder="Position">
+  <button type="submit">save</button>
+</form>
+
+<form id="editForm" style="display: none;">
+  <input type="hidden" id="editId">
+  
+  <input type="text" id="editName" required>
+  
+  <input type="text" id="editPosition" required>
+  
+  <button type="submit">Update</button>
+</form>
+
+<script>
+  $(document).ready(function() {
+
+    // === get data ===
+    function getAllData() {
+      $.ajax({
+        url: 'http://localhost:8888/employee', // Ganti dengan URL API yang kamu gunakan
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+          let rows = "";
+          
+          $.each(response.data, function(index, data) {
+            rows += /*html*/
+              `<tr>
+                  <td>${index+1}</td>
+                  <td>${data.name}</td>
+                  <td>${data.position}</td>
+                  <td>
+                    <button class="editBtn" data-id="${data.id}" data-name="${data.name}" data-position="${data.position}">Edit</button>
+                    <button class="handleDelete" data-id="${data.id}">Hapus</button>
+                  </td>
+              </tr>`;
+          });
+          $("#dataTable tbody").html(rows);
+        },
+        error: function(xhr, status, error) {
+          console.error("Terjadi kesalahan: " + error);
+        }
+      });
+    }
+
+    getAllData()
+
+    // === create data ===
+    $("#formForSubmit").submit(function(event) {
+      event.preventDefault(); // Mencegah form reload halaman
+
+      // Ambil nilai dari input
+      let name = $("#name").val();
+      let position = $("#position").val();
+
+      // Data yang akan dikirim dalam request body
+      let requestData = {
+        name: name,
+        position: position
+      };
+
+      $.ajax({
+        url: 'http://localhost:8888/employee',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(requestData),
+        success: function(response) {
+          alert(response.message);
+          getAllData()
+        },
+        error: function(xhr, status, error) {
+          alert(xhr.responseJSON.message);
+        }
+      });
+    });
+
+
+    // === ambil salah satu data dari tabel dan tampikan di form update ===
+    $(document).on("click", ".editBtn", function() {
+      let id = $(this).data("id");
+      let name = $(this).data("name");
+      let position = $(this).data("position");
+
+      // Isi form dengan data yang dipilih
+      $("#editId").val(id);
+      $("#editName").val(name);
+      $("#editPosition").val(position);
+      
+      // Tampilkan form
+      $("#editForm").show();
+    });
+
+    // === update data ===
+    $("#editForm").submit(function(event) {
+      event.preventDefault();
+
+      let id = $("#editId").val();
+      let name = $("#editName").val();
+      let position = $("#editPosition").val();
+
+      $.ajax({
+        url: `http://localhost:8888/employee/${id}`,
+        type: 'PUT', 
+        contentType: 'application/json',
+        data: JSON.stringify({ name: name, position: position }),
+        success: function(response) {
+          alert(response.message);
+          getAllData()
+          $("#editForm").hide()
+        },
+        error: function(xhr, status, error) {
+          console.error("Gagal update:", error);
+        }
+      });
+    });
+
+    $(document).on("click", ".handleDelete", function() {
+      let id = $(this).data("id");
+      if (confirm("Apakah kamu yakin ingin menghapus data ini?")) {
+        $.ajax({
+          url: `http://localhost:8888/employee/${id}`,
+          type: 'DELETE',
+          success: function(response) {
+            alert(response.message)
+            getAllData()
+          },
+          error: function(xhr, status, error) {
+            alert(xhr.responseJSON.message);
+          }
+        });
+      }
+    });
+
+
+
+  });
+</script>
+
+</body>
+</html>
